@@ -2,7 +2,7 @@
 import Container from "./Container.vue";
 import UserBar from "./UserBar.vue";
 import ImageGallary from "./ImageGallary.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted , watch} from "vue";
 import { useRoute } from "vue-router";
 import { supabase } from "../supabase";
 import { useUserStore } from "../stores/users";
@@ -44,6 +44,7 @@ const fetchData = async () => {
     .eq("owner_id", user.value.id);
 
   posts.value = postsData;
+
   await fetchIsFollowing();
 
   loading.value = false;
@@ -62,6 +63,10 @@ const fetchIsFollowing = async () => {
      
   }
 };
+
+watch(loggedInUser, ()=>{
+    fetchIsFollowing()
+})
 
 onMounted(() => {
   fetchData();
