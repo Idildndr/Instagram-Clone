@@ -78,6 +78,11 @@ const goToUsersProfile = () => {
   align-items: center;
 }
 
+.center-content {
+  display: flex;
+  align-items: center;
+}
+
 .right-content a {
   margin-right: 10px;
 }
