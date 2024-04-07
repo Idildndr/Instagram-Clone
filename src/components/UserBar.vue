@@ -1,10 +1,11 @@
 <script setup>
-import { defineProps } from "vue";
+import { defineProps, ref } from "vue";
 import UploadPhotoModel from "./UploadPhotoModel.vue";
-import { useUserStore } from "@/stores/users";
 import { useRoute } from "vue-router";
+import { useUserStore } from "../stores/users";
 import { storeToRefs } from "pinia";
 import { supabase } from "../supabase";
+import UploadProfilePictureModel from "./UploadProfilePictureModel.vue";
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -17,51 +18,63 @@ const props = defineProps([
   "userInfo",
   "addNewPost",
   "isFollowing",
-  "isFollowing",
+  "updateIsFollowing",
 ]);
 
 const followUser = async () => {
-  const {data, error} = await supabase.from("followers_following").insert({
+  props.updateIsFollowing(true);
+  await supabase.from("followers_following").insert({
     follower_id: user.value.id,
     following_id: props.user.id,
   });
+};
 
-  console.log("takip edemiyorum " +error);
-  console.log("takip edebiliyorum " +data);
+const unfollowUser = async () => {
+  props.updateIsFollowing(false);
+  await supabase
+    .from("followers_following")
+    .delete()
+    .eq("follower_id", user.value.id)
+    .eq("following_id", props.user.id);
 };
 </script>
-
 <template>
   <div class="userbar-container" v-if="props.user">
-    <div class="top-content">
-      <a-typography-title :level="2">
-        {{ props.user.username }}
-      </a-typography-title>
-      <div v-if="user">
-        <UploadPhotoModel
-          v-if="profileUsername === user.username"
-          :addNewPost="addNewPost"
-        />
-        <div v-else>
-          <a-button v-if="!props.isFollowing"   @click="followUser"> Follow </a-button>
-          <a-button v-else type="primary"> Following  </a-button>
+      <div class="top-content">
+        <UploadProfilePictureModel :user="props.user"></UploadProfilePictureModel>
+        
+        <div class="middle-content">
+          <ATypographyTitle :level="2">{{props.user.username}}</ATypographyTitle>
+        
+        <div class="bottom-content">
+        <ATypographyTitle :level="5">{{props.userInfo.posts}} posts</ATypographyTitle>
+        <ATypographyTitle :level="5">{{props.userInfo.followers}} followers</ATypographyTitle>
+        <ATypographyTitle :level="5">{{props.userInfo.following}} following</ATypographyTitle>
+    </div>
+
         </div>
+
+
+          <div v-if="user">
+              <UploadPhotoModal 
+                  v-if="profileUsername === user.username"
+                  :addNewPost="addNewPost"
+              />
+              <div v-else>
+                  <AButton v-if="!props.isFollowing" @click="followUser">Follow</AButton>
+                  <AButton v-else @click="unfollowUser">Following</AButton>
+              </div>
+              
+          </div>
       </div>
-    </div>
-    <div class="bottom-content">
-      <a-typography-title :level="5"
-        >{{ userInfo.posts }} posts</a-typography-title
-      >
-      <a-typography-title :level="5"
-        >{{ userInfo.followers }} followers</a-typography-title
-      >
-      <a-typography-title :level="5"
-        >{{ userInfo.following }} following</a-typography-title
-      >
-    </div>
+      
+  </div>
+  <div class="userbar-container" v-else>
+      <div class="top-content">
+          <ATypographyTitle :level="2">User Not Found</ATypographyTitle>
+      </div>
   </div>
 </template>
-
 <style scoped>
 .userbar-container {
   padding-bottom: 75px;
@@ -72,23 +85,21 @@ const followUser = async () => {
   align-items: center;
 }
 
-.top-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .bottom-content h5 {
-  display: flex;
-  align-items: center;
-  margin: 0;
+  margin: 0 !important;
   padding: 0;
-  margin-right: 30px;
+  margin-right: 30px !important;
+  align-items: center;
 }
 
 .top-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.middle-content {
+  display: flex;
+  flex-direction: column;
 }
 </style>
