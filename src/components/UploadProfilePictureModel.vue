@@ -87,7 +87,7 @@ onMounted(async () => {
       <div @click="showModal" style="cursor: pointer">
         <img
           v-if="!props.user.profile_picture"
-          src="#"
+          src="../assets/avatar.png"
           class="img-fluid bi pe-none me-2 circular-img"
           width="100"
           height="100"
@@ -111,7 +111,7 @@ onMounted(async () => {
     <div v-else>
       <img
         v-if="!props.user.profile_picture"
-        src="#"
+        src="../assets/avatar.png"
         class="img-fluid bi pe-none me-2 circular-img"
         width="100"
         height="100"

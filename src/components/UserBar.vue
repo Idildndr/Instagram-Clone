@@ -54,9 +54,8 @@ const unfollowUser = async () => {
 
         </div>
 
-
           <div v-if="user">
-              <UploadPhotoModal 
+              <UploadPhotoModel 
                   v-if="profileUsername === user.username"
                   :addNewPost="addNewPost"
               />
